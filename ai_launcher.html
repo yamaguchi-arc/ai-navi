@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生成AIランチャ 試作版</title>
+  <style>
+    :root {
+      --bg: #0f0f10;
+      --panel: #1b1b1f;
+      --panel2: #24242a;
+      --line: #33333a;
+      --text: #ffffff;
+      --sub: #c7c7cf;
+      --blue: #4da3ff;
+      --green: #4caf50;
+      --yellow: #ffc107;
+      --red: #f44336;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Yu Gothic", "Meiryo", system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    header {
+      padding: 22px 26px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, #111, #1b2738);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: 0.04em;
+    }
+
+    .subtitle {
+      color: var(--sub);
+      font-size: 17px;
+      margin-top: 4px;
+    }
+
+    main {
+      padding: 22px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    button:hover { border-color: var(--blue); transform: translateY(-1px); }
+    button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: bold; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+
+    .card h2, .card h3 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .kana { color: var(--sub); font-size: 16px; }
+    .type { color: var(--blue); font-weight: bold; }
+    .rank { color: var(--yellow); font-size: 20px; }
+    .desc { color: var(--sub); }
+
+    .skills {
+      margin: 12px 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .skills li {
+      margin: 6px 0;
+      padding: 8px 10px;
+      background: #141418;
+      border-radius: 10px;
+      border-left: 4px solid var(--green);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .openBtn { background: #17395f; border-color: #235c96; }
+    .copyBtn { background: #1d4b2a; border-color: #2d7a43; }
+
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .mission {
+      text-align: left;
+      min-height: 72px;
+    }
+
+    .note {
+      background: #16161a;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--sub);
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      color: var(--sub);
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: #101014;
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 17px;
+    }
+
+    textarea { min-height: 90px; }
+
+    .small { font-size: 15px; color: var(--sub); }
+    .hidden { display: none !important; }
+
+    .matrix-wrap {
+      overflow-x: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      margin-bottom: 22px;
+    }
+
+    table.matrix {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1280px;
+      font-size: 17px;
+    }
+
+    .matrix th,
+    .matrix td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .matrix th {
+      background: #202027;
+      color: var(--blue);
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .matrix td:first-child,
+    .matrix th:first-child {
+      text-align: left;
+      position: sticky;
+      left: 0;
+      background: #202027;
+      z-index: 3;
+      font-weight: bold;
+    }
+
+    .score-best { color: var(--green); font-weight: bold; }
+    .score-good { color: var(--yellow); font-weight: bold; }
+    .score-normal { color: var(--sub); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>生成AIランチャ 試作版</h1>
+    <div class="subtitle">用途で選ぶ / AIを比べる / URLと表示ON・OFFだけ手動変更</div>
+  </header>
+
+  <main>
+    <div class="tabs">
+      <button class="active" onclick="showTab('use', this)">使う</button>
+      <button onclick="showTab('compare', this)">比べる</button>
+      <button onclick="showTab('settings', this)">編集</button>
+    </div>
+
+    <section id="use" class="section active">
+      <div class="note">やりたいことを選ぶと、おすすめAIだけ表示します。初心者はここだけ使えばOK。</div>
+      <div class="mission-list" id="missionButtons"></div>
+      <div id="recommendedArea" class="grid"></div>
+    </section>
+
+    <section id="compare" class="section">
+      <div class="note">💡 AIごとの特徴を比較する資料モード。まずマトリクスで一発比較し、下のカードで詳しく確認できます。</div>
+      <div class="matrix-wrap">
+        <table class="matrix" id="matrixTable"></table>
+      </div>
+      <div id="compareArea" class="grid"></div>
+    </section>
+
+    <section id="settings" class="section">
+      <div class="note">試作運用用の簡易編集です。スキル説明は固定、変更はURL・表示ON/OFF・メモ中心にしています。</div>
+      <label>編集するAI</label>
+      <select id="aiSelect" onchange="loadEditForm()"></select>
+
+      <label>表示</label>
+      <select id="editVisible">
+        <option value="true">表示する</option>
+        <option value="false">非表示にする</option>
+      </select>
+
+      <label>URL</label>
+      <input id="editUrl" />
+
+      <label>運用メモ</label>
+      <textarea id="editMemo" placeholder="例：社内では調査用として案内する"></textarea>
+
+      <div class="actions">
+        <button class="copyBtn" onclick="saveEdit()">保存</button>
+        <button onclick="resetData()">初期状態に戻す</button>
+      </div>
+      <p class="small">※この試作はブラウザのlocalStorageに保存します。HTML単体で動きます。</p>
+    </section>
+  </main>
+
+  <script>
+    const defaultAis = [
+      { id:'chatgpt', name:'ChatGPT', kana:'チャットジーピーティー', type:'万能生成', rank:'★★★★★', url:'https://chat.openai.com', desc:'文章・相談・画像・分析まで幅広く使える主力AI。', skills:['安定生成 ◎','マルチ対応 ◎','問題解決 ◎'], uses:['メール作成','文章作成','図面相談','パース指示','資料作成'], visible:true, memo:'' },
+      { id:'gemini', name:'Gemini', kana:'ジェミニ', type:'Google連携', rank:'★★★★☆', url:'https://gemini.google.com', desc:'Google系サービスや画像理解、調査補助に向くAI。', skills:['情報整理 ◎','画像理解 ◯','Google連携 ◎'], uses:['調査','資料確認','画像読み取り'], visible:true, memo:'' },
+      { id:'copilot', name:'Copilot', kana:'コパイロット', type:'業務支援', rank:'★★★★☆', url:'https://copilot.microsoft.com', desc:'Microsoft系の仕事支援AI。WindowsやOffice利用者向け。', skills:['作業効率化 ◎','Office連携 ◎','文章補助 ◯'], uses:['メール作成','資料作成','業務整理'], visible:true, memo:'' },
+      { id:'claude', name:'Claude', kana:'クロード', type:'文章特化', rank:'★★★★★', url:'https://claude.ai', desc:'長文読解や仕様書、丁寧な文章作成が得意。', skills:['深層読解 ◎','精密生成 ◎','長文処理 ◎'], uses:['文章作成','仕様書確認','資料確認'], visible:true, memo:'' },
+      { id:'perplexity', name:'Perplexity', kana:'パープレキシティ', type:'調査特化', rank:'★★★★☆', url:'https://www.perplexity.ai', desc:'検索しながら根拠付きで回答する調査向けAI。', skills:['情報検索 ◎','根拠提示 ◎','比較調査 ◎'], uses:['調査','比較','情報確認'], visible:true, memo:'' },
+      { id:'genspark', name:'Genspark', kana:'ジェンスパーク', type:'情報整理', rank:'★★★★☆', url:'https://www.genspark.ai', desc:'調べた情報をまとめてページ化する調査まとめ向けAI。', skills:['情報収集 ◎','自動整理 ◎','ページ生成 ◯'], uses:['調査','まとめ作成','比較'], visible:true, memo:'' },
+      { id:'imagefx', name:'ImageFX', kana:'イメージエフエックス', type:'画像生成', rank:'★★★★☆', url:'https://labs.google/fx/tools/image-fx', desc:'リアル系画像の生成に向く画像AI。', skills:['高精細生成 ◎','写真表現 ◎','素材作成 ◯'], uses:['画像作成','パース指示','素材作成'], visible:true, memo:'' },
+      { id:'canva', name:'Canva', kana:'キャンバ', type:'デザイン', rank:'★★★★☆', url:'https://www.canva.com', desc:'資料・画像・SNS素材を簡単に作れるデザインAI。', skills:['デザイン生成 ◎','テンプレ活用 ◎','簡単編集 ◎'], uses:['資料作成','画像作成','チラシ作成'], visible:true, memo:'' },
+      { id:'notebooklm', name:'NotebookLM', kana:'ノートブックエルエム', type:'資料特化', rank:'★★★★★', url:'https://notebooklm.google.com', desc:'自分の資料を読み込ませて根拠付きで答える資料専用AI。', skills:['根拠回答 ◎','資料整理 ◎','要約生成 ◎'], uses:['資料確認','仕様書確認','調査'], visible:true, memo:'' },
+      { id:'manus', name:'Manus', kana:'マナス', type:'自動実行', rank:'★★★★☆', url:'https://manus.im', desc:'調査・分析・作成を自動で進めるエージェント型AI。', skills:['自律行動 ◎','タスク実行 ◎','一括処理 ◯'], uses:['自動化','調査','資料作成'], visible:true, memo:'' },
+      { id:'antigravity', name:'Antigravity', kana:'アンチグラビティ', type:'開発自動化', rank:'★★★★★', url:'https://antigravity.google', desc:'AIによる開発・自動化の未来枠として比較用に登録。', skills:['自動開発 ◎','一括実行 ◎','未来性 ◎'], uses:['自動化','開発','比較'], visible:true, memo:'URLは正式利用状況に応じて修正' },
+      { id:'grok', name:'Grok', kana:'グロック', type:'リアルタイム', rank:'★★★★☆', url:'https://grok.com', desc:'最新情報や軽い相談、スピード感のある回答に向くAI。', skills:['即時応答 ◎','最新取得 ◎','ライト会話 ◯'], uses:['調査','比較','時事確認'], visible:true, memo:'' }
+    ];
+
+    const missions = ['メール作成','調査','資料作成','資料確認','画像作成','パース指示','図面相談','仕様書確認','自動化','比較'];
+
+    let ais = JSON.parse(localStorage.getItem('aiLauncherData') || 'null') || defaultAis;
+
+    function saveData(){ localStorage.setItem('aiLauncherData', JSON.stringify(ais)); }
+
+    function showTab(id, btn){
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAll();
+    }
+
+    function renderMissions(){
+      const box = document.getElementById('missionButtons');
+      box.innerHTML = missions.map(m => `<button class="mission" onclick="selectMission('${m}')">${m}<br><span class="small">おすすめAIを表示</span></button>`).join('');
+    }
+
+    let currentMission = '';
+
+    function selectMission(mission){
+      currentMission = mission;
+      document.querySelectorAll('.mission').forEach(btn=>{
+        btn.classList.remove('active');
+        if(btn.textContent.includes(mission)) btn.classList.add('active');
+      });
+      const list = ais.filter(ai => ai.visible && ai.uses.includes(mission));
+      document.getElementById('recommendedArea').innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="note">該当AIがありません。編集で用途を追加する想定です。</div>';
+    }
+
+    function cardHtml(ai){
+      return `
+        <div class="card">
+          <h2>${ai.name}<br><span class="kana">（${ai.kana}）</span></h2>
+          <div class="type">タイプ：${ai.type}</div>
+          <div class="rank">ランク：${ai.rank}</div>
+          <p class="desc">${ai.desc}</p>
+          <ul class="skills">${ai.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+          <div class="small">おすすめ：${ai.uses.join(' / ')}</div>
+          ${ai.memo ? `<div class="small">メモ：${ai.memo}</div>` : ''}
+          <div class="actions">
+            <button class="openBtn" onclick="window.open('${ai.url}','_blank')">開く</button>
+            <button class="copyBtn" onclick="copyPrompt('${ai.name}')">基本プロンプトコピー</button>
+          </div>
+        </div>`;
+    }
+
+    function scoreClass(value){
+      if(value === '◎') return 'score-best';
+      if(value === '◯') return 'score-good';
+      return 'score-normal';
+    }
+
+    const matrixScores = {
+      // 評価順：文章 / 調査 / 資料 / 初心者 / 画像 / 動画 / 音声 / コード / 自動化 / 最新情報
+      chatgpt:      ['◎','◎','◯','◎','◯','△','◯','◎','◯','◯'],
+      gemini:       ['◯','◎','◯','◯','◯','△','◯','◯','△','◎'],
+      copilot:      ['◯','◯','◎','◎','△','△','△','◯','△','◯'],
+      claude:       ['◎','◯','◎','◯','△','△','△','◯','△','△'],
+      perplexity:   ['△','◎','◯','◯','△','△','△','△','△','◎'],
+      genspark:     ['△','◎','◯','◯','△','△','△','△','△','◎'],
+      imagefx:      ['△','△','△','◯','◎','△','△','△','△','△'],
+      canva:        ['◯','△','◎','◎','◎','◯','△','△','△','△'],
+      notebooklm:   ['◎','◎','◎','◯','△','△','◯','△','△','△'],
+      manus:        ['◯','◎','◯','△','△','△','△','◯','◎','◯'],
+      antigravity:  ['△','◯','△','△','△','△','△','◎','◎','△'],
+      grok:         ['◯','◎','△','◯','△','△','△','◯','△','◎']
+    };
+
+    function renderMatrix(){
+      const headers = ['AI名','文章','調査','資料','初心者','画像','動画','音声','コード','自動化','最新情報'];
+      const rows = ais.filter(ai => ai.visible).map(ai => {
+        const scores = matrixScores[ai.id] || ['△','△','△','△','△','△','△','△','△','△'];
+        return `<tr>
+          <td>${ai.name}<br><span class="kana">${ai.kana}</span></td>
+          ${scores.map(s => `<td class="${scoreClass(s)}">${s}</td>`).join('')}
+        </tr>`;
+      }).join('');
+      document.getElementById('matrixTable').innerHTML = `
+        <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${rows}</tbody>
+      `;
+    }
+
+    function renderCompare(){
+      renderMatrix();
+      document.getElementById('compareArea').innerHTML = ais.filter(ai => ai.visible).map(cardHtml).join('');
+    }
+
+    function renderSettings(){
+      const select = document.getElementById('aiSelect');
+      select.innerHTML = ais.map(ai => `<option value="${ai.id}">${ai.name}（${ai.kana}）</option>`).join('');
+      loadEditForm();
+    }
+
+    function loadEditForm(){
+      const id = document.getElementById('aiSelect').value || ais[0].id;
+      const ai = ais.find(a => a.id === id);
+      document.getElementById('editVisible').value = String(ai.visible);
+      document.getElementById('editUrl').value = ai.url;
+      document.getElementById('editMemo').value = ai.memo || '';
+    }
+
+    function saveEdit(){
+      const id = document.getElementById('aiSelect').value;
+      const ai = ais.find(a => a.id === id);
+      ai.visible = document.getElementById('editVisible').value === 'true';
+      ai.url = document.getElementById('editUrl').value;
+      ai.memo = document.getElementById('editMemo').value;
+      saveData();
+      renderAll();
+      alert('保存しました');
+    }
+
+    function resetData(){
+      if(confirm('初期状態に戻しますか？')){
+        ais = defaultAis;
+        saveData();
+        renderAll();
+      }
+    }
+
+    function copyPrompt(aiName){
+      const text = `${aiName}を使って、以下の目的に合う回答をしてください。\n目的：\n条件：初心者にも分かるように、短く整理してください。`;
+      navigator.clipboard.writeText(text).then(() => alert('プロンプトをコピーしました'));
+    }
+
+    function renderAll(){
+      renderMissions();
+      renderCompare();
+      const selected = document.getElementById('aiSelect').value;
+      renderSettings();
+      if(selected) document.getElementById('aiSelect').value = selected;
+      if(!document.getElementById('recommendedArea').innerHTML) selectMission('メール作成');
+    }
+
+    renderAll();
+    selectMission('メール作成');
+  </script>
+</body>
+</html>
