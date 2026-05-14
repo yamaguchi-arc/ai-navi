@@ -3,39 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>生成AIランチャ 試作版</title>
+  <title>生成AIランチャ 完成版</title>
   <style>
     :root {
-      --bg: #0f0f10;
-      --panel: #1b1b1f;
-      --panel2: #24242a;
-      --line: #33333a;
+      --bg: #151821;
+      --panel: #1c2130;
+      --panel-soft: #202638;
+      --panel2: #252b3b;
+      --line: rgba(255,255,255,0.12);
       --text: #ffffff;
-      --sub: #c7c7cf;
-      --blue: #4da3ff;
-      --green: #4caf50;
-      --yellow: #ffc107;
-      --red: #f44336;
+      --sub: #d6d9e6;
+      --muted: #aeb4c7;
+      --blue: #5aa9ff;
+      --blue2: #7a63ff;
+      --green: #5fd17b;
+      --yellow: #d7b95f;
+      --red: #ff6b6b;
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at top left, rgba(122,99,255,0.16), transparent 34%),
+        radial-gradient(circle at top right, rgba(90,169,255,0.12), transparent 28%),
+        var(--bg);
       color: var(--text);
-      font-family: "Yu Gothic", "Meiryo", system-ui, sans-serif;
+      font-family: "Yu Gothic", "Meiryo", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       font-size: 18px;
       line-height: 1.6;
     }
 
     header {
-      padding: 22px 26px;
+      padding: 20px 24px;
       border-bottom: 1px solid var(--line);
-      background: linear-gradient(135deg, #111, #1b2738);
+      background: linear-gradient(135deg, #121827, #1d2e52 55%, #263b75);
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
     }
 
     h1 {
@@ -46,63 +53,151 @@
 
     .subtitle {
       color: var(--sub);
-      font-size: 17px;
+      font-size: 16px;
       margin-top: 4px;
     }
 
     main {
-      padding: 22px;
+      padding: 20px;
       max-width: 1200px;
       margin: 0 auto;
     }
 
     .tabs {
       display: flex;
-      gap: 12px;
-      margin-bottom: 22px;
+      gap: 10px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
     button {
       border: 1px solid var(--line);
-      background: var(--panel2);
+      background: linear-gradient(135deg, #252b3b, #202435);
       color: var(--text);
-      padding: 12px 18px;
-      border-radius: 12px;
+      padding: 12px 16px;
+      border-radius: 16px;
       font-size: 18px;
       cursor: pointer;
       transition: 0.15s;
+      font-family: inherit;
     }
 
-    button:hover { border-color: var(--blue); transform: translateY(-1px); }
-    button.active { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: bold; }
+    button:hover {
+      border-color: var(--blue);
+      transform: translateY(-1px);
+    }
+
+    button.active {
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      border-color: rgba(255,255,255,0.28);
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 18px rgba(90,169,255,0.28);
+    }
 
     .section { display: none; }
     .section.active { display: block; }
 
+    .hero-chatgpt {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      background:
+        radial-gradient(circle at top left, rgba(122,99,255,0.35), transparent 38%),
+        linear-gradient(135deg, #173f78, #24316a 58%, #1c2130);
+      border: 1px solid rgba(139,190,255,0.55);
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 12px 34px rgba(67,123,255,0.20);
+    }
+
+    .hero-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .hero-text {
+      font-size: 16px;
+      color: var(--sub);
+      margin-top: 4px;
+    }
+
+    .hero-button {
+      background: linear-gradient(135deg, var(--blue), var(--blue2));
+      border-color: rgba(255,255,255,0.35);
+      font-weight: bold;
+      min-width: 150px;
+      box-shadow: 0 0 20px rgba(90,169,255,0.30);
+    }
+
+    .note {
+      background: rgba(18,18,22,0.78);
+      border-left: 4px solid var(--blue);
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: var(--sub);
+      margin-bottom: 18px;
+    }
+
+    .block-title {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 18px 0 8px;
+      color: var(--text);
+    }
+
+    .mini-help {
+      color: var(--sub);
+      font-size: 15px;
+      margin: -2px 0 10px;
+    }
+
+    .mission-list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .mission {
+      text-align: center;
+      min-height: 64px;
+      padding: 10px 8px;
+      font-weight: bold;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      gap: 14px;
+    }
+
+    .compact-grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
 
     .card {
-      background: var(--panel);
+      background: linear-gradient(135deg, var(--panel), var(--panel-soft));
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.23);
     }
 
-    .card h2, .card h3 {
+    .card h2,
+    .card h3 {
       margin: 0 0 8px;
-      font-size: 24px;
+      font-size: 22px;
     }
 
     .kana { color: var(--sub); font-size: 16px; }
     .type { color: var(--blue); font-weight: bold; }
     .rank { color: var(--yellow); font-size: 20px; }
-    .desc { color: var(--sub); }
+    .desc { color: var(--sub); margin: 8px 0; }
+    .small { font-size: 15px; color: var(--muted); }
 
     .skills {
       margin: 12px 0;
@@ -113,7 +208,7 @@
     .skills li {
       margin: 6px 0;
       padding: 8px 10px;
-      background: #141418;
+      background: rgba(10,12,18,0.45);
       border-radius: 10px;
       border-left: 4px solid var(--green);
     }
@@ -125,57 +220,28 @@
       margin-top: 14px;
     }
 
-    .openBtn { background: #17395f; border-color: #235c96; }
-    .copyBtn { background: #1d4b2a; border-color: #2d7a43; }
+    .openBtn { background: linear-gradient(135deg, #17395f, #224f90); border-color: #386fb0; }
 
-    .mission-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-      margin-bottom: 18px;
+    .favorite-star {
+      float: right;
+      border: none;
+      background: transparent;
+      font-size: 26px;
+      padding: 0 4px;
+      color: var(--yellow);
+      line-height: 1;
     }
 
-    .mission {
-      text-align: left;
-      min-height: 72px;
+    .favorite-star:hover {
+      transform: scale(1.1);
+      border: none;
     }
-
-    .note {
-      background: #16161a;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px 16px;
-      color: var(--sub);
-      margin-bottom: 18px;
-    }
-
-    label {
-      display: block;
-      color: var(--sub);
-      margin-top: 12px;
-      margin-bottom: 4px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      background: #101014;
-      border: 1px solid var(--line);
-      color: var(--text);
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 17px;
-    }
-
-    textarea { min-height: 90px; }
-
-    .small { font-size: 15px; color: var(--sub); }
-    .hidden { display: none !important; }
 
     .matrix-wrap {
       overflow-x: auto;
       background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 16px;
+      border-radius: 18px;
       margin-bottom: 22px;
     }
 
@@ -195,8 +261,8 @@
     }
 
     .matrix th {
-      background: #202027;
-      color: var(--blue);
+      background: #202944;
+      color: #b9d9ff;
       position: sticky;
       top: 0;
       z-index: 2;
@@ -207,7 +273,7 @@
       text-align: left;
       position: sticky;
       left: 0;
-      background: #202027;
+      background: #202944;
       z-index: 3;
       font-weight: bold;
     }
@@ -215,81 +281,112 @@
     .score-best { color: var(--green); font-weight: bold; }
     .score-good { color: var(--yellow); font-weight: bold; }
     .score-normal { color: var(--sub); }
+
+    .caution-card {
+      border-color: rgba(255,193,7,0.35);
+      background: linear-gradient(135deg, #252217, #1c2130);
+    }
+
+    .caution-card h3 { color: #ffd36b; }
+
+    @media (max-width: 640px) {
+      body { font-size: 17px; }
+      header { padding: 15px; }
+      h1 { font-size: 23px; }
+      .subtitle { font-size: 14px; }
+      main { padding: 12px; }
+      .tabs { gap: 8px; }
+      .tabs button { flex: 1; padding: 10px 6px; font-size: 15px; }
+      .hero-chatgpt { flex-direction: column; align-items: stretch; padding: 14px; }
+      .hero-title { font-size: 24px; }
+      .hero-button { width: 100%; }
+      .block-title { font-size: 20px; margin-top: 16px; }
+      .mission-list { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .mission { min-height: 58px; font-size: 16px; padding: 8px 6px; }
+      .grid, .compact-grid { grid-template-columns: 1fr; gap: 10px; }
+      .card { padding: 14px; }
+      .card h2, .card h3 { font-size: 21px; }
+      .desc { font-size: 16px; }
+      .skills { display: none; }
+      .matrix-wrap { border-radius: 12px; }
+      table.matrix { min-width: 760px; font-size: 15px; }
+      .matrix th, .matrix td { padding: 9px 8px; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>生成AIランチャ 試作版</h1>
-    <div class="subtitle">用途で選ぶ / AIを比べる / URLと表示ON・OFFだけ手動変更</div>
+    <h1>生成AIランチャ 完成版</h1>
+    <div class="subtitle">社内向け / ChatGPT中心 / スマホ対応</div>
   </header>
 
   <main>
     <div class="tabs">
       <button class="active" onclick="showTab('use', this)">使う</button>
       <button onclick="showTab('compare', this)">比べる</button>
-      <button onclick="showTab('settings', this)">編集</button>
+      <button onclick="showTab('tips', this)">使い方のコツ</button>
     </div>
 
     <section id="use" class="section active">
-      <div class="note">やりたいことを選ぶと、おすすめAIだけ表示します。初心者はここだけ使えばOK。</div>
+      <div class="hero-chatgpt">
+        <div>
+          <div class="hero-title">困ったらまずChatGPT</div>
+          <div class="hero-text">社内の基本利用はChatGPT推奨です。迷ったらここから始めてください。</div>
+        </div>
+        <button class="hero-button" onclick="window.open('https://chat.openai.com','_blank')">ChatGPTを開く</button>
+      </div>
+
+      <div class="block-title">お気に入りAI</div>
+      <div class="mini-help">★を押すと、お気に入りAIを登録できます。</div>
+      <div id="favoriteArea" class="grid compact-grid"></div>
+
+      <div class="block-title">やりたいこと</div>
       <div class="mission-list" id="missionButtons"></div>
-      <div id="recommendedArea" class="grid"></div>
+
+      <div class="block-title">おすすめAI</div>
+      <div id="recommendedArea" class="grid compact-grid"></div>
     </section>
 
     <section id="compare" class="section">
-      <div class="note">💡 AIごとの特徴を比較する資料モード。まずマトリクスで一発比較し、下のカードで詳しく確認できます。</div>
+      <div class="note">💡 AIごとの特徴を比較する資料モードです。マトリクスで一発比較し、カードで詳細を確認できます。</div>
       <div class="matrix-wrap">
         <table class="matrix" id="matrixTable"></table>
       </div>
       <div id="compareArea" class="grid"></div>
     </section>
 
-    <section id="settings" class="section">
-      <div class="note">試作運用用の簡易編集です。スキル説明は固定、変更はURL・表示ON/OFF・メモ中心にしています。</div>
-      <label>編集するAI</label>
-      <select id="aiSelect" onchange="loadEditForm()"></select>
-
-      <label>表示</label>
-      <select id="editVisible">
-        <option value="true">表示する</option>
-        <option value="false">非表示にする</option>
-      </select>
-
-      <label>URL</label>
-      <input id="editUrl" />
-
-      <label>運用メモ</label>
-      <textarea id="editMemo" placeholder="例：社内では調査用として案内する"></textarea>
-
-      <div class="actions">
-        <button class="copyBtn" onclick="saveEdit()">保存</button>
-        <button onclick="resetData()">初期状態に戻す</button>
-      </div>
-      <p class="small">※この試作はブラウザのlocalStorageに保存します。HTML単体で動きます。</p>
+    <section id="tips" class="section">
+      <div class="note">💡 コツは「うまく使う方法」、注意は「安全に使うための最低限のルール」です。</div>
+      <div class="block-title">AI使用のコツ</div>
+      <div class="grid compact-grid" id="tipsArea"></div>
+      <div class="block-title">使用時の注意</div>
+      <div class="grid compact-grid" id="cautionArea"></div>
     </section>
   </main>
 
   <script>
     const defaultAis = [
-      { id:'chatgpt', name:'ChatGPT', kana:'チャットジーピーティー', type:'万能生成', rank:'★★★★★', url:'https://chat.openai.com', desc:'文章・相談・画像・分析まで幅広く使える主力AI。', skills:['安定生成 ◎','マルチ対応 ◎','問題解決 ◎'], uses:['メール作成','文章作成','図面相談','パース指示','資料作成'], visible:true, memo:'' },
-      { id:'gemini', name:'Gemini', kana:'ジェミニ', type:'Google連携', rank:'★★★★☆', url:'https://gemini.google.com', desc:'Google系サービスや画像理解、調査補助に向くAI。', skills:['情報整理 ◎','画像理解 ◯','Google連携 ◎'], uses:['調査','資料確認','画像読み取り'], visible:true, memo:'' },
-      { id:'copilot', name:'Copilot', kana:'コパイロット', type:'業務支援', rank:'★★★★☆', url:'https://copilot.microsoft.com', desc:'Microsoft系の仕事支援AI。WindowsやOffice利用者向け。', skills:['作業効率化 ◎','Office連携 ◎','文章補助 ◯'], uses:['メール作成','資料作成','業務整理'], visible:true, memo:'' },
-      { id:'claude', name:'Claude', kana:'クロード', type:'文章特化', rank:'★★★★★', url:'https://claude.ai', desc:'長文読解や仕様書、丁寧な文章作成が得意。', skills:['深層読解 ◎','精密生成 ◎','長文処理 ◎'], uses:['文章作成','仕様書確認','資料確認'], visible:true, memo:'' },
-      { id:'perplexity', name:'Perplexity', kana:'パープレキシティ', type:'調査特化', rank:'★★★★☆', url:'https://www.perplexity.ai', desc:'検索しながら根拠付きで回答する調査向けAI。', skills:['情報検索 ◎','根拠提示 ◎','比較調査 ◎'], uses:['調査','比較','情報確認'], visible:true, memo:'' },
-      { id:'genspark', name:'Genspark', kana:'ジェンスパーク', type:'情報整理', rank:'★★★★☆', url:'https://www.genspark.ai', desc:'調べた情報をまとめてページ化する調査まとめ向けAI。', skills:['情報収集 ◎','自動整理 ◎','ページ生成 ◯'], uses:['調査','まとめ作成','比較'], visible:true, memo:'' },
-      { id:'imagefx', name:'ImageFX', kana:'イメージエフエックス', type:'画像生成', rank:'★★★★☆', url:'https://labs.google/fx/tools/image-fx', desc:'リアル系画像の生成に向く画像AI。', skills:['高精細生成 ◎','写真表現 ◎','素材作成 ◯'], uses:['画像作成','パース指示','素材作成'], visible:true, memo:'' },
-      { id:'canva', name:'Canva', kana:'キャンバ', type:'デザイン', rank:'★★★★☆', url:'https://www.canva.com', desc:'資料・画像・SNS素材を簡単に作れるデザインAI。', skills:['デザイン生成 ◎','テンプレ活用 ◎','簡単編集 ◎'], uses:['資料作成','画像作成','チラシ作成'], visible:true, memo:'' },
-      { id:'notebooklm', name:'NotebookLM', kana:'ノートブックエルエム', type:'資料特化', rank:'★★★★★', url:'https://notebooklm.google.com', desc:'自分の資料を読み込ませて根拠付きで答える資料専用AI。', skills:['根拠回答 ◎','資料整理 ◎','要約生成 ◎'], uses:['資料確認','仕様書確認','調査'], visible:true, memo:'' },
-      { id:'manus', name:'Manus', kana:'マナス', type:'自動実行', rank:'★★★★☆', url:'https://manus.im', desc:'調査・分析・作成を自動で進めるエージェント型AI。', skills:['自律行動 ◎','タスク実行 ◎','一括処理 ◯'], uses:['自動化','調査','資料作成'], visible:true, memo:'' },
-      { id:'antigravity', name:'Antigravity', kana:'アンチグラビティ', type:'開発自動化', rank:'★★★★★', url:'https://antigravity.google', desc:'AIによる開発・自動化の未来枠として比較用に登録。', skills:['自動開発 ◎','一括実行 ◎','未来性 ◎'], uses:['自動化','開発','比較'], visible:true, memo:'URLは正式利用状況に応じて修正' },
-      { id:'grok', name:'Grok', kana:'グロック', type:'リアルタイム', rank:'★★★★☆', url:'https://grok.com', desc:'最新情報や軽い相談、スピード感のある回答に向くAI。', skills:['即時応答 ◎','最新取得 ◎','ライト会話 ◯'], uses:['調査','比較','時事確認'], visible:true, memo:'' }
+      { id:'chatgpt', name:'ChatGPT', kana:'チャットジーピーティー', type:'万能生成', rank:'★★★★★', url:'https://chat.openai.com', desc:'迷ったらまず使う、社内推奨の主力AI。', skills:['安定生成 ◎','マルチ対応 ◎','問題解決 ◎'], uses:['メール作成','文章作成','図面相談','パース指示','資料作成','相談'], visible:true, memo:'' },
+      { id:'gemini', name:'Gemini', kana:'ジェミニ', type:'Google連携', rank:'★★★★☆', url:'https://gemini.google.com', desc:'Google系や画像理解に強いAI。', skills:['情報整理 ◎','画像理解 ◯','Google連携 ◎'], uses:['調査','資料確認','画像読み取り','相談'], visible:true, memo:'' },
+      { id:'copilot', name:'Copilot', kana:'コパイロット', type:'業務支援', rank:'★★★★☆', url:'https://copilot.microsoft.com', desc:'Microsoft系の仕事支援AI。', skills:['作業効率化 ◎','Office連携 ◎','文章補助 ◯'], uses:['メール作成','資料作成','業務整理','文章作成'], visible:true, memo:'' },
+      { id:'claude', name:'Claude', kana:'クロード', type:'文章特化', rank:'★★★★★', url:'https://claude.ai', desc:'長文や仕様書に強い文章系AI。', skills:['深層読解 ◎','精密生成 ◎','長文処理 ◎'], uses:['文章作成','仕様書確認','資料確認','要約'], visible:true, memo:'' },
+      { id:'perplexity', name:'Perplexity', kana:'パープレキシティ', type:'調査特化', rank:'★★★★☆', url:'https://www.perplexity.ai', desc:'根拠付きの調査に向くAI。', skills:['情報検索 ◎','根拠提示 ◎','比較調査 ◎'], uses:['調査','比較','情報確認'], visible:true, memo:'' },
+      { id:'genspark', name:'Genspark', kana:'ジェンスパーク', type:'情報整理', rank:'★★★★☆', url:'https://www.genspark.ai', desc:'調査内容をまとめやすいAI。', skills:['情報収集 ◎','自動整理 ◎','ページ生成 ◯'], uses:['調査','まとめ作成','比較','要約'], visible:true, memo:'' },
+      { id:'imagefx', name:'ImageFX', kana:'イメージエフエックス', type:'画像生成', rank:'★★★★☆', url:'https://labs.google/fx/tools/image-fx', desc:'リアル系画像の生成向け。', skills:['高精細生成 ◎','写真表現 ◎','素材作成 ◯'], uses:['画像作成','パース指示','素材作成'], visible:true, memo:'' },
+      { id:'canva', name:'Canva', kana:'キャンバ', type:'デザイン', rank:'★★★★☆', url:'https://www.canva.com', desc:'資料や画像を簡単に作れる。', skills:['デザイン生成 ◎','テンプレ活用 ◎','簡単編集 ◎'], uses:['資料作成','画像作成','チラシ作成'], visible:true, memo:'' },
+      { id:'notebooklm', name:'NotebookLM', kana:'ノートブックエルエム', type:'資料特化', rank:'★★★★★', url:'https://notebooklm.google.com', desc:'自分の資料を読み込ませて使うAI。', skills:['根拠回答 ◎','資料整理 ◎','要約生成 ◎'], uses:['資料確認','仕様書確認','調査','要約'], visible:true, memo:'' },
+      { id:'manus', name:'Manus', kana:'マナス', type:'自動実行', rank:'★★★★☆', url:'https://manus.im', desc:'調査や作業を自動で進めるAI。', skills:['自律行動 ◎','タスク実行 ◎','一括処理 ◯'], uses:['自動化','調査','資料作成'], visible:true, memo:'' },
+      { id:'antigravity', name:'Antigravity', kana:'アンチグラビティ', type:'開発自動化', rank:'★★★★★', url:'https://antigravity.google', desc:'開発・自動化の未来枠。', skills:['自動開発 ◎','一括実行 ◎','未来性 ◎'], uses:['自動化','開発','比較'], visible:true, memo:'URLは正式利用状況に応じて修正' },
+      { id:'grok', name:'Grok', kana:'グロック', type:'リアルタイム', rank:'★★★★☆', url:'https://grok.com', desc:'最新情報や軽い相談向け。', skills:['即時応答 ◎','最新取得 ◎','ライト会話 ◯'], uses:['調査','比較','時事確認','相談'], visible:true, memo:'' }
     ];
 
     const missions = ['メール作成','調査','資料作成','資料確認','画像作成','パース指示','図面相談','仕様書確認','自動化','比較'];
 
     let ais = JSON.parse(localStorage.getItem('aiLauncherData') || 'null') || defaultAis;
+    let favoriteIds = JSON.parse(localStorage.getItem('aiLauncherFavorites') || 'null') || ['chatgpt'];
+    let currentMission = '';
 
-    function saveData(){ localStorage.setItem('aiLauncherData', JSON.stringify(ais)); }
+    function saveFavorites(){ localStorage.setItem('aiLauncherFavorites', JSON.stringify(favoriteIds)); }
 
     function showTab(id, btn){
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
@@ -301,10 +398,8 @@
 
     function renderMissions(){
       const box = document.getElementById('missionButtons');
-      box.innerHTML = missions.map(m => `<button class="mission" onclick="selectMission('${m}')">${m}<br><span class="small">おすすめAIを表示</span></button>`).join('');
+      box.innerHTML = missions.map(m => `<button class="mission" onclick="selectMission('${m}')">${m}<br><span class="small">おすすめAI</span></button>`).join('');
     }
-
-    let currentMission = '';
 
     function selectMission(mission){
       currentMission = mission;
@@ -313,12 +408,14 @@
         if(btn.textContent.includes(mission)) btn.classList.add('active');
       });
       const list = ais.filter(ai => ai.visible && ai.uses.includes(mission));
-      document.getElementById('recommendedArea').innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="note">該当AIがありません。編集で用途を追加する想定です。</div>';
+      document.getElementById('recommendedArea').innerHTML = list.length ? list.map(cardHtml).join('') : '<div class="note">該当AIがありません。</div>';
     }
 
     function cardHtml(ai){
+      const isFav = favoriteIds.includes(ai.id);
       return `
         <div class="card">
+          <button class="favorite-star" onclick="toggleFavorite('${ai.id}')" title="お気に入り">${isFav ? '★' : '☆'}</button>
           <h2>${ai.name}<br><span class="kana">（${ai.kana}）</span></h2>
           <div class="type">タイプ：${ai.type}</div>
           <div class="rank">ランク：${ai.rank}</div>
@@ -328,7 +425,6 @@
           ${ai.memo ? `<div class="small">メモ：${ai.memo}</div>` : ''}
           <div class="actions">
             <button class="openBtn" onclick="window.open('${ai.url}','_blank')">開く</button>
-            <button class="copyBtn" onclick="copyPrompt('${ai.name}')">基本プロンプトコピー</button>
           </div>
         </div>`;
     }
@@ -340,7 +436,6 @@
     }
 
     const matrixScores = {
-      // 評価順：文章 / 調査 / 資料 / 初心者 / 画像 / 動画 / 音声 / コード / 自動化 / 最新情報
       chatgpt:      ['◎','◎','◯','◎','◯','△','◯','◎','◯','◯'],
       gemini:       ['◯','◎','◯','◯','◯','△','◯','◯','△','◎'],
       copilot:      ['◯','◯','◎','◎','△','△','△','◯','△','◯'],
@@ -375,51 +470,64 @@
       document.getElementById('compareArea').innerHTML = ais.filter(ai => ai.visible).map(cardHtml).join('');
     }
 
-    function renderSettings(){
-      const select = document.getElementById('aiSelect');
-      select.innerHTML = ais.map(ai => `<option value="${ai.id}">${ai.name}（${ai.kana}）</option>`).join('');
-      loadEditForm();
-    }
-
-    function loadEditForm(){
-      const id = document.getElementById('aiSelect').value || ais[0].id;
-      const ai = ais.find(a => a.id === id);
-      document.getElementById('editVisible').value = String(ai.visible);
-      document.getElementById('editUrl').value = ai.url;
-      document.getElementById('editMemo').value = ai.memo || '';
-    }
-
-    function saveEdit(){
-      const id = document.getElementById('aiSelect').value;
-      const ai = ais.find(a => a.id === id);
-      ai.visible = document.getElementById('editVisible').value === 'true';
-      ai.url = document.getElementById('editUrl').value;
-      ai.memo = document.getElementById('editMemo').value;
-      saveData();
-      renderAll();
-      alert('保存しました');
-    }
-
-    function resetData(){
-      if(confirm('初期状態に戻しますか？')){
-        ais = defaultAis;
-        saveData();
-        renderAll();
+    function toggleFavorite(id){
+      if(favoriteIds.includes(id)){
+        favoriteIds = favoriteIds.filter(favId => favId !== id);
+      } else {
+        favoriteIds.push(id);
       }
+      saveFavorites();
+      renderAll();
     }
 
-    function copyPrompt(aiName){
-      const text = `${aiName}を使って、以下の目的に合う回答をしてください。\n目的：\n条件：初心者にも分かるように、短く整理してください。`;
-      navigator.clipboard.writeText(text).then(() => alert('プロンプトをコピーしました'));
+    function renderFavorites(){
+      const favs = ais.filter(ai => ai.visible && favoriteIds.includes(ai.id));
+      document.getElementById('favoriteArea').innerHTML = favs.length
+        ? favs.map(cardHtml).join('')
+        : '<div class="note">★を押すと、ここによく使うAIが表示されます。</div>';
+    }
+
+    const tips = [
+      ['プロンプトはAIにつくらせる','「この目的に合うプロンプトを作って」と聞けばOK。'],
+      ['最初の一言はタイトル意識','例：見積メールを作りたい / 画像を直したい。'],
+      ['完璧な文章じゃなくてOK','短いメモや箇条書きでも十分伝わります。'],
+      ['分からなければAIに相談','「どう聞けばいい？」と聞いて大丈夫です。'],
+      ['箇条書きで伝える','条件・目的・相手を分けると精度が上がります。'],
+      ['誰向けかを書く','社内向け、取引先向け、初心者向けなど。'],
+      ['目的を書く','何を作りたいか、何を判断したいかを書く。'],
+      ['長さを指定する','短く、200文字以内、表形式など。'],
+      ['1回で決めない','会話しながら修正すると良くなります。']
+    ];
+
+    const cautions = [
+      ['個人情報は入力しない','氏名・住所・電話番号などは入力しないようにします。'],
+      ['機密情報は入力しない','社外秘資料や未公開情報は扱いに注意します。'],
+      ['AIの回答は必ず確認','AIの回答は間違うことがあります。人が確認します。'],
+      ['社外送信前に確認','メールや資料は送信前に必ず見直します。'],
+      ['重要判断はAIだけで決めない','判断材料として使い、最終判断は人が行います。']
+    ];
+
+    function renderTips(){
+      document.getElementById('tipsArea').innerHTML = tips.map(t => `
+        <div class="card">
+          <h3>${t[0]}</h3>
+          <p class="desc">${t[1]}</p>
+        </div>
+      `).join('');
+      document.getElementById('cautionArea').innerHTML = cautions.map(t => `
+        <div class="card caution-card">
+          <h3>⚠ ${t[0]}</h3>
+          <p class="desc">${t[1]}</p>
+        </div>
+      `).join('');
     }
 
     function renderAll(){
       renderMissions();
+      renderFavorites();
       renderCompare();
-      const selected = document.getElementById('aiSelect').value;
-      renderSettings();
-      if(selected) document.getElementById('aiSelect').value = selected;
-      if(!document.getElementById('recommendedArea').innerHTML) selectMission('メール作成');
+      renderTips();
+      if(!document.getElementById('recommendedArea').innerHTML) selectMission(currentMission || 'メール作成');
     }
 
     renderAll();

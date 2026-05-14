@@ -9,9 +9,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#07175c">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="AIナビ">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;font-family:"Segoe UI","Yu Gothic","Hiragino Sans",sans-serif;background:#07175c;color:#fff}
@@ -63,10 +61,9 @@ header{display:flex;justify-content:space-between;align-items:center;position:re
 <button class="gate game" onclick="openGame()" style="border:1px solid rgba(255,255,255,.44);font:inherit;text-align:left;padding:0"><div class="inner"><div class="icon">🎮</div><div><h2>ゲーム<br><span>AI制作紹介</span></h2><p>AIで作った作品を紹介</p></div><div class="arrow">›</div></div></button>
 </main>
 <section class="guide"><div class="bot">🤖</div><div><strong>迷ったらAIランチャへ</strong><span>目的を選ぶだけで、おすすめAIを確認できます。</span></div></section>
-<div class="version">AIナビ Web版 v1.1 icon</div></div>
+<div class="version">AIナビ Web版 v1.4 launcher complete</div></div>
 <div class="modal" id="gameModal"><div class="modal-card"><h3>ゲーム（AI制作紹介）</h3><p>AIを使って制作したミニコンテンツです。社内AI技術紹介・来客向けアピール用です。</p><a class="game-link" href="blackjack.html"><span>🃏</span><span>ブラックジャック<small>AI制作ゲーム紹介</small></span></a><a class="game-link" href="bita_oshi.html"><span>⚡</span><span>ビタオシチャレンジ<small>AI制作ゲーム紹介</small></span></a><button class="close" onclick="closeGame()">閉じる</button></div></div>
 <script>
-if("serviceWorker" in navigator && location.protocol.startsWith("http")){window.addEventListener("load",function(){navigator.serviceWorker.register("./service-worker.js").catch(function(){})})}
 function openGame(){document.getElementById("gameModal").classList.add("open")}
 function closeGame(){document.getElementById("gameModal").classList.remove("open")}
 document.getElementById("gameModal").addEventListener("click",function(e){if(e.target.id==="gameModal")closeGame()})
